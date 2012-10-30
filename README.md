@@ -24,4 +24,4 @@ L'application affiche la position de l'utilisateur sur une carte en temps réel.
 
 <p>A chaque début de parcours, l'utilisateur est amené à choisir le mode. Plusieurs modes sont disponibles, comme VTT, course à pieds, ou encore randonnée. Chaque mode possède ses spécificités pour calculer les calories brûlées.</p>
 
-<p>Plusieurs réglages seront disponibles comme par exemple, l'intervalle entre les géolocalisations de l'utilisateur. Ce paramètre permettra d'économiser la batterie du téléphone.</p>
+<p>Plusieurs réglages seront disponibles comme par exemple, l'intervalle entre les géolocalisations de l'utilisateur. Ce paramètre permettra d'économiser la batterie du téléphone.</p> <p>Collaborateurs:<ul><li>Marine</li><li>Aymeric</li><li>Simon</li></ul>
