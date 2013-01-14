@@ -1,0 +1,61 @@
+<html>
+<head>
+<script>
+  const DB_NAME = 'RunRunRun';
+  const DB_VERSION = 1; // Use a long long for this value (don't use a float)
+  const DB_STORE_NAME_SPORTS = 'Sports'; //ID , Name
+  const DB_STORE_NAME_CONF = 'Conf'; 
+  const DB_STORE_NAME_EVENTS= 'Events'; //Id, timestamp start, timestamp fin, Duration, Distance, Deniv FK Sport
+  const DB_STORE_NAME_RECORDS= 'Records'; //TimeStamp, Lat, Long, Accuracy, Alti, FK Events, 
+   
+  
+  var db;
+ var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+ 
+ 
+  function openDb() {
+    console.log("openDb ...");
+    var req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onsuccess = function (evt) {
+      // Better use "this" than "req" to get the result to avoid problems with
+      // garbage collection.
+      // db = req.result;
+      db = this.result;
+      console.log("openDb DONE");
+      
+      
+       var store_conf = evt.currentTarget.result.createObjectStore(DB_STORE_NAME_CONF, { keyPath: 'id', autoIncrement: true });
+	  var store_sports = evt.currentTarget.result.createObjectStore(DB_STORE_NAME_SPORTS, { keyPath: 'id', autoIncrement: true });
+	  var store_events = evt.currentTarget.result.createObjectStore(DB_STORE_NAME_EVENTS, { keyPath: 'id', autoIncrement: true });
+	  var store_records = evt.currentTarget.result.createObjectStore(DB_STORE_NAME_RECORDS, { keyPath: 'timeStamp' });
+console.log("Creation store");
+    };
+    req.onerror = function (evt) {
+      console.error("openDb:", evt.target.errorCode);
+    };
+ 
+    req.onupgradeneeded = function (evt) {
+       console.log("Creation store");
+	  
+
+    };
+  }
+  
+  
+  function createStore(evt){
+	  //On va creer 4 stores
+	  
+		  
+		  
+  }
+  
+   openDb();
+</script>
+</head>
+<body>
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,182 @@
+<html>
+<head>
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+
+<script type = "text/Javascript">
+
+var map; 
+var marker;
+var distance=0;
+var lat_last_point;
+var lon_last_point;
+
+var store=new Array();
+
+var cpt=0;
+    function initialize(lat,longi) {
+    var latlng = new google.maps.LatLng(lat,longi);
+    var myOptions = {
+        zoom: 12,
+        center: latlng,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+   map = new google.maps.Map(document.getElementById("map"),
+            myOptions);
+      
+      
+}
+
+var start_gps=function(){
+
+
+
+	
+	watchId = navigator.geolocation.watchPosition(successCallback, errorCallback, {enableHighAccuracy:true});
+	
+	
+}
+
+
+function store_point(lat, lon, cpt){
+
+	var object={};
+	
+	object.lat=lat;
+	object.lon=lon;
+	store[cpt]=object;
+}
+
+function successCallback(position){
+document.getElementById('long').innerHTML=position.coords.longitude;
+	document.getElementById('lat').innerHTML=position.coords.latitude;
+	document.getElementById('accuracy').innerHTML=position.coords.accuracy;
+	document.getElementById('heading').innerHTML=position.coords.heading;
+	document.getElementById('speed').innerHTML=convert_speed(position.coords.speed);
+	
+	if(cpt==0){
+		lat_last_point=position.coords.latitude;
+		lon_last_point=position.coords.longitude;
+		
+		initialize(position.coords.latitude,position.coords.longitude);
+	}else{
+	
+	distance+=CalcDistanceBetween(lat_last_point,lon_last_point,position.coords.latitude, position.coords.longitude);
+	lat_last_point=position.coords.latitude;
+	lon_last_point=position.coords.longitude;
+	
+	document.getElementById('distance').innerHTML=distance;
+	}
+	
+	
+	//positionner_marker(position.coords.latitude, position.coords.longitude, cpt);
+	store_point(position.coords.latitude, position.coords.longitude, cpt);
+	map.setCenter(new google.maps.LatLng(position.coords.latitude,position.coords.longitude));
+	
+	
+	
+cpt++;
+
+}
+
+
+function errorCallback(error){
+	
+	
+	
+}
+
+function positionner_marker(lati, longi, text){
+		    
+		     var marker = new google.maps.Marker({
+   // position: data.latlng ,
+   position :  new google.maps.LatLng(lati, longi),  
+    map: map,
+    title: 'hello'  });
+		    
+		    
+		    
+	    }
+
+function convert_speed(speed){
+//Speed is in meter per second
+//Have to convert in in km/h
+
+return ((speed*3600)/1000);
+
+}
+		
+   function polyline() {
+		    
+		    var path_polyline = new Array();
+			var my_distance = 0;
+			for(var i = 0;i<store.length;i++) {
+				
+				//console.log(store[i].lat);
+				var p = new google.maps.LatLng(store[i].lat, store[i].lon);
+				path_polyline.push(p);
+			}
+		
+			
+			
+			
+	        var line = new google.maps.Polyline({
+	          path: path_polyline,
+	          strokeColor: '#ff0000',
+	          strokeOpacity: 1.0,
+	          strokeWeight: 3
+	        });
+	        line.setMap(map);
+			
+			
+			
+
+	     }
+		
+		
+		 function CalcDistanceBetween(lat1, lon1, lat2, lon2) {
+		    var R = 6378.1; // Radius of earth in Km var R = (6371 / 1.609344);
+		    var dLat = toRad(lat2-lat1);
+		    var dLon = toRad(lon2-lon1); 
+		    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+		            Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * 
+		            Math.sin(dLon/2) * Math.sin(dLon/2); 
+		    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+		    var d = R * c;
+		    return d;
+		}
+		
+		
+		function toRad(Value) {
+		    /** Converts numeric degrees to radians */
+		    return Value * Math.PI / 180;
+		}
+
+
+function stop(){
+	
+	
+	polyline();
+}
+		
+start_gps();
+
+</script>
+<style type="text/css">
+    #container{position:relative;width:990px;margin:auto;}
+    #container #map{width:500px;height:500px;margin:auto;}
+  </style>
+</head>
+<body >
+
+<p>Longitude : <span id="long"></span> </p>
+<p>Latitude : <span id="lat"></span> </p>
+<p>Accuracy : <span id="accuracy"></span></p>
+<p>Heading : <span id="heading"></span></p>
+<p>Speed : <span id="speed"></span></p>
+<p>Distance cumulée <span id="distance"></span></p>
+<input type="button" value="stop" onclick="stop();" />
+<div id="container">
+<div id="map"></div>
+</div>
+</body>
+</html>

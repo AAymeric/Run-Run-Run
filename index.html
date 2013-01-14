@@ -1,0 +1,124 @@
+<html>
+<head>
+<!-- <script src="storage_lib.js" ></script>-->
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+
+<script src="js/db_mgnt.js"></script>
+<script src="js/geolocation.js"></script>
+<script src="js/gmaps.js"></script>
+<script>
+runrunrun.indexedDB.open();
+</script>
+  <style type="text/css">
+    #container{position:relative;width:990px;margin:auto;}
+    #container #map{width:500px;height:500px;margin:auto;}
+  </style>
+</head>
+
+
+<body onload="">
+<h2>Sports</h2>
+
+<div data-role="sport_edit">
+<fieldset>
+
+<legend>
+Liste des sports</legend>
+	<form name="runrunrun" onsubmit="form_delete_sport(this); return false;" id="run" >
+		<select multiple  name="list_sports" id="list_sports">
+
+		</select>
+<input type="button" value="editer" onclick="form_edit_sport(this.form);" />
+<input type="text" value="" id="input_edit_sport" />
+<input type="button" value="effacer" onclick="form_delete_sport(this.form);" />
+</form>
+
+</fieldset>
+</div>
+<div data-role="sport_add">
+<fieldset>
+
+<legend>
+Ajouter un sport</legend>
+<form>
+<input type="text" name="add_sport" id="add_sport"  />
+<input type="button" value="ajouter" onclick="form_get_data('add_sport', this.form);" />
+
+</fieldset>
+
+</div>
+
+<h2>Parcours</h2>
+<fieldset>
+<legend>Ajouter un parcours</legend>
+<form>
+Sport : 
+<select  name="choice_sports" id="choice_sports">
+
+		</select>
+		<input type="button"  value="ajouter parcours" onclick="start_parcours(this.form);" /> 
+		<input type="button" value="stopper parcours" onclick="stop_parcours();" />
+</form>
+</fieldset>
+<fieldset>
+<legend>Tous les parcours</legend>
+<table border="1" id="list_parcours">
+<tr>
+	<th></th>
+	<th>Nom</th>
+	<th>Sport</th>
+	<th>Heure "start"</th>
+	<th>Heure "stop"</th>
+	<th>Durée</th>
+	<th>Lat départ</th>
+	<th>Long départ</th>
+	<th>id</th>
+	
+</tr>
+</table>
+</fieldset>
+<input type="button" value="tous les parcours" onclick="list_parcours();" />
+
+<input type="button" value="Lancer tracking" onclick="start_gps();" />
+<input type="button" value="Stopper tracking" onclick="stopWatch();" />
+
+<input type="button" value="Ajouter data" onclick="remplir_data();" />
+
+<fieldset>
+	<legend>Voir enregistrements</legend>
+	<table border="1" id="list_records">
+	<tr>
+		<th>latitude</th>
+		<th>longitude</th>
+		<th>timestamp</th>
+		<th>accuracy</th>
+		<th>altitudeAccuracy</th>
+		<th>altitude</th>
+		<th>speed</th>
+		<th>heading</th>
+		<th>See on google maps</th>
+	</tr>	
+	
+	
+
+	
+	</table>
+	
+</fieldset>
+<div id="container">
+<div id="map">
+
+
+</div>
+</div>
+<textarea cols="50" rows="50" id="zone_json">
+</textarea>
+<textarea cols="50" rows="50" id="input_json">
+</textarea><input type="button" value="vaider input json" onclick="input_json();"/>
+</body>
+
+
+
+
+
+</html>
