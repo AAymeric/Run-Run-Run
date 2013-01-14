@@ -1,0 +1,130 @@
+<html>
+
+<head>
+<script>
+
+var runrunrun = {};
+runrunrun.indexedDB = {};
+runrunrun.indexedDB.db=null;
+var db=null;
+var DBNAME = 'bozoleclown';
+var DBVERSION = 1;
+var STORENAME_CONF = 'conf';
+var STORENAME_SPORTS = 'sports';
+var STORENAME_EVENTS='events';
+var STORENAME_RECORDS='records';
+
+var IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
+var IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
+
+  var store_conf=null;
+  var store_sports=null;
+  var store_events=null;
+  var store_records=null;
+  
+    var object_store_conf=null;
+  var object_store_sports=null;
+  var object_store_events=null;
+  var object_store_records=null;
+  
+  var type='readwrite';
+runrunrun.indexedDB.open=function(){
+	
+	if(db){ //DB exists
+		console.log("DB existe");
+		
+	}else{
+		//Or not
+		//We open a connection to local DB
+		 var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+
+		
+		  var openreq = indexedDB.open(DBNAME, DBVERSION);
+		  
+		  openreq.onerror = function withStoreOnError() {
+			  	console.error("asyncStorage: can't open database:", openreq.error.name);
+		  };
+		  openreq.onupgradeneeded = function withStoreOnUpgradeNeeded() {
+        // First time setup: create an empty object store
+        
+        		console.log("Creation des stores");
+		        var object_store_conf=openreq.result.createObjectStore(STORENAME_CONF,{ keyPath: 'id', autoIncrement: true });
+		        var object_store_sports=openreq.result.createObjectStore(STORENAME_SPORTS,{ keyPath: undefined , autoIncrement: true });
+		        var object_store_events=openreq.result.createObjectStore(STORENAME_EVENTS,{ keyPath: 'id', autoIncrement: true});
+		        var object_store_records=openreq.result.createObjectStore(STORENAME_RECORDS,{ keyPath: 'id', autoIncrement: false });
+		        
+		        
+		       // object_store_sports.createIndex('id','id',{ unique: true });
+         };
+         
+         openreq.onsuccess = function withStoreOnSuccess() {
+             
+        db = openreq.result;
+        
+       //console.log(store_sports);
+       //add_sport("football");
+       //add_sport("rugby");
+       //add_sport("footing");
+       
+      // get_sport(1);
+       //get_all_sports();
+       //update_sport(1, {name:"course de co"});
+     //  delete_sport();
+     
+   
+     open_stores();
+     		
+//get_all_sports();
+      };
+
+		
+	}
+	
+};
+
+function open_stores(){
+	
+	
+	var myStores=[STORENAME_SPORTS];
+	
+	
+	for (var i in myStores){
+		
+			var store=db.transaction(myStores[i], type).objectStore(myStores[i]);
+
+		document.write('<h2>'+myStores[i]+'</h2>');
+		document.write('<ul>');
+		
+		
+		var keyRange = IDBKeyRange.lowerBound(0);
+  var cursorRequest = store.openCursor(keyRange);
+  
+  cursorRequest.onsuccess = function(e){
+	  
+	  
+	  var result = e.target.result;
+	    if(!result == false)
+	      return;
+	      console.log("Value "+result.value.name+" Key "+result.key);
+	      //render_sports(result.value, result.key);
+	      
+	      result.continue();
+  }
+		
+		
+		document.write('</ul>');
+		
+	}
+	
+	
+}
+
+runrunrun.indexedDB.open();
+
+</script>
+</head>
+<body>
+
+</body>
+
+</html>

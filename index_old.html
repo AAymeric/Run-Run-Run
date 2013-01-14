@@ -1,0 +1,226 @@
+
+<!DOCTYPE html>
+<html>
+<script type="text/javascript">
+
+
+
+var start=false;
+
+var data;
+
+ var db;
+ 
+ // In the following line, you should include the prefixes of implementations you want to test.
+window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+// DON'T use "var indexedDB = ..." if you're not in a function.
+// Moreover, you may need references to some window.IDB* objects:
+window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
+window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange
+// (Mozilla has never prefixed these objects, so we don't need window.mozIDB*)
+
+if (!window.indexedDB) {
+    window.alert("Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.")
+}
+
+// Let us open our database
+var request = indexedDB.open("RunRunRun");
+ 
+ request.onerror = function(event) {
+  alert("Why didn't you allow my web app to use IndexedDB?!");
+};
+request.onsuccess = function(event) {
+ db = this.result;
+ var v = "2.4";
+  var setVrequest = db.setVersion(v);
+ 
+ 
+  
+   var store_conf =  db.createObjectStore("conf",{keyPath: "id",autoIncrement: true});
+          
+var store_event= db.createObjectStore("events",
+          {keyPath: "id",autoIncrement: true});
+var store_points =  db.createObjectStore("points",
+          {keyPath: "timeStamp"});    
+ 
+ 
+    
+          
+          
+ 
+  console.log("success");
+  db.onerror = function(event) {
+  // Generic error handler for all errors targeted at this database's
+  // requests!
+  alert("Database error: " + event.target.errorCode);
+};
+
+
+
+};
+
+
+//On en gros on crée des tables, avec clés primaires (index) , et il y a des options comme autoIncrement
+//En index il faut mettre se qui servira à la recherche eventuelle dans ces tables virtuelles, donc si dans une table on fait une recherche sur champ1 et champ2 on met les deux en index
+request.onupgradeneeded = function (event) {
+
+console.log("ici");
+   
+    };
+
+
+
+ 
+function successCallback(position){
+
+
+  addLog("Latitude : " + position.coords.latitude + ", Longitude : " + position.coords.longitude);
+};  
+ 
+function errorCallback(error){
+
+console.log(error);
+  switch(error.code){
+    case error.PERMISSION_DENIED:
+      alert("L'utilisateur n'a pas autorisé l'accès à sa position");
+      break;      
+    case error.POSITION_UNAVAILABLE:
+      alert("L'emplacement de l'utilisateur n'a pas pu être déterminé");
+      break;
+    case error.TIMEOUT:
+      alert("Le service n'a pas répondu à temps");
+      break;
+    }
+};
+ 
+ 
+ 
+ 
+ function store_row(lati, longi, precision){
+	 
+	 var myRow;
+	 
+	 myRow.latitude=lati;
+	 myRow.longitude=longi;
+	 myRow.precision=precision;
+	 myRow.time=getTimeStamp();
+	 
+	 
+ }
+ 
+  function getObjectStore(store_name, mode) {
+  console.log(db);
+    var tx = db.transaction(store_name, mode);
+    console.log(db);
+    return tx.objectStore(store_name);
+  }
+ 
+ function store_data(text1, text2, text3){
+	 
+	 var obj={champ1: text1, champ2:text2, champ3:text3};
+	 
+	  var store = getObjectStore('conf', 'readwrite');
+	  var req;
+    try {
+      req = store.add(obj);
+    } catch (e) {
+      if (e.name == 'DataCloneError')
+        displayActionFailure("This engine doesn't know how to clone a Blob, use Firefox");
+      throw e;
+    }
+ }
+ 
+ function getTimeStamp(){
+	 
+	 
+	return new Date().getTime();
+ }
+ 
+  function stopWatch(){
+  navigator.geolocation.clearWatch(watchId);
+  } 	
+	function get_position(){
+		
+	
+		
+		if (navigator.geolocation){
+			//addLog("La geolocalisation fonctionne");
+			
+			navigator.geolocation.watchPosition(
+function(position){
+  addLog("Latitude "+ position.coords.latitude+" Longi: "+position.coords.longitude+" / Précision "+position.coords.accuracy);
+}, null, {enableHighAccuracy:false});
+						
+			
+			
+		}else{
+			
+						addLog("La geolocalisation ne fonctionne pas");
+
+		}
+		
+		
+	}
+	
+	function returnTime(){
+		
+		var d=new Date();
+		
+		return ""+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"";
+	}
+	
+    function stopWatch(){
+     	clearWatch(watchId);		
+    }	
+    
+    function startWatch(){
+    var watchId = navigator.geolocation.watchPosition(
+	     successCallback, errorCallback, {maximumAge:5000, timeout:2000}
+	);
+	
+	
+	    addLog("lancé");
+	    //get_position();
+	    
+    }
+    
+    
+    
+    
+    function addLog(chaine){
+	    
+	    document.getElementById("log").innerHTML+="<p>"+chaine+" - "+returnTime()+"</p>";
+	     document.getElementById("mailog").innerHTML+=""+chaine+" "+getTimeStamp()+"\n";
+    }
+    
+    function changeEtat(boolean){
+	    
+	    start=boolean;
+    }
+</script>
+<body onload="">
+<form method="post" action="mailto:simon51100@gmail.com"/>
+<textarea id="mailog" name="log"></textarea>
+<input type="submit" />
+</form>
+<a href="#" onclick="stopWatch()">Stop Watch</a>
+<a href="#" onclick="startWatch()">Start Watch</a>
+<a href="#" onclick="store_data('toto', 'tata', 'titi');">Store data</a>
+<fieldset><legend>Etat</legend>
+<div id="etat">
+
+</div>
+</fieldset>
+
+<fieldset><legend>Log</legend>
+<div id="log">
+
+
+</div>
+</fieldset>
+
+</body>
+
+
+</html>
+

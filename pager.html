@@ -1,0 +1,79 @@
+<html>
+<head>
+<script>
+var id_visible=null;
+window.onload=function(){
+	//var url=window.document.URL.toString();
+	
+	console.log('url '+window.document.URL.toString());
+	
+var elements=document.getElementsByClassName('menu_button');
+	for(var i in elements){
+		
+		var element=elements[i];
+		var zone=element.getAttribute('data-role');
+		element.addEventListener("click", changeVisibility, false); 
+		if(i==0){
+			//element.style.visibility="visible";
+			document.getElementById(zone).style.display="inline";
+			
+			id_visible=zone;
+		}else{
+			
+			document.getElementById(zone).style.display="none";
+		}
+		
+		//console.log(element.getAttribute('data-role')+" "+element.getAttribute('id'));
+	}
+	
+};
+
+
+
+function changeVisibility(){
+	var id=this.getAttribute('data-role');
+	if(!isVisible(id)){
+		
+					document.getElementById(id).style.display="inline";
+					document.getElementById(id_visible).style.display="none";
+					id_visible=id;
+		
+	}
+	
+}
+
+
+function isVisible(id){
+	
+	
+	if(document.getElementById(id).style.display=="inline"){
+		
+		return true;
+	}else{
+		
+		return false;
+	}
+	
+}
+
+</script>
+
+</head>
+<body>
+<a href="" class="menu_button" id="titi" data-role="page1">Page 1</a>
+<a class="menu_button" id="toto" data-role="page2">Page 2</a>
+<a class="menu_button" id="tata" data-role="page3">Page 3 </a>
+<div id="page1" data-role="bip">
+Page 1
+</div>
+
+<div id="page2">
+Page 2
+</div>
+
+<div id="page3">
+Page 3 
+</div>
+</body>
+
+</html>
