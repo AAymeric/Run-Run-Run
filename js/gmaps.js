@@ -18,22 +18,16 @@ function CalcDistanceBetween(lat1, lon1, lat2, lon2) {
 	     
 	     
 	     
-	      function polyline() {
+	     function center_map(latitude, longitude){
+		     
+		     map.setCenter(new google.maps.LatLng(latitude,longitude));
+		     
+	     }
+	     
+	     
+	      function polyline(path_polyline) {
 		    
-		    var path_polyline = new Array();
-			var my_distance = 0;
-			for(var i = 0;i<dataLat.length;i++) {
-				if(i+1 != dataLat.length) {
-					my_distance = my_distance + CalcDistanceBetween(dataLat[i], dataLong[i], dataLat[i+1], dataLong[i+1]);
-				}
-				var p = new google.maps.LatLng(dataLat[i], dataLong[i]);
-				path_polyline.push(p);
-			}
-		
-			document.getElementById("distance").innerHTML= my_distance;
-			console.log(my_distance);
-			
-			
+		    
 	        var line = new google.maps.Polyline({
 	          path: path_polyline,
 	          strokeColor: '#ff0000',

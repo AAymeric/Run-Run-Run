@@ -1,5 +1,6 @@
 
 var runrunrun = {};
+var sports = {};
 runrunrun.indexedDB = {};
 runrunrun.indexedDB.db=null;
 var db=null;
@@ -7,8 +8,10 @@ var DBNAME = 'RunRunRun';
 var DBVERSION = 1;
 var STORENAME_CONF = 'conf';
 var STORENAME_SPORTS = 'sports';
+var STORENAME_TAGS= 'tags';
 var STORENAME_PARCOURS='parcours';
 var STORENAME_RECORDS='records';
+var STORENAME_PROFILS='profils';
 var current_parcours=null;
 var startTime=null; 
 var IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
@@ -18,12 +21,16 @@ var IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
   var store_sports=null;
   var store_parcours=null;
   var store_records=null;
+  var store_tags=null;
+  var store_profils=null;
   
-    var object_store_conf=null;
+  var object_store_conf=null;
+  var object_store_profils=null;
+  var object_store_tags=null;
   var object_store_sports=null;
   var object_store_parcours=null;
   var object_store_records=null;
-  
+  var init_add_sport=false;
   var type='readwrite';
 runrunrun.indexedDB.open=function(){
 	
@@ -43,12 +50,15 @@ runrunrun.indexedDB.open=function(){
 		  };
 		  openreq.onupgradeneeded = function withStoreOnUpgradeNeeded() {
         
-        		var object_store_conf=openreq.result.createObjectStore(STORENAME_CONF,{ keyPath: 'id', autoIncrement: true });
+        		var object_store_conf=openreq.result.createObjectStore(STORENAME_CONF,{keyPath: undefined, autoIncrement: true });
 		        var object_store_sports=openreq.result.createObjectStore(STORENAME_SPORTS,{ keyPath: undefined , autoIncrement: true });
 		        var object_store_parcours=openreq.result.createObjectStore(STORENAME_PARCOURS,{ keyPath: undefined, autoIncrement: true});
 		        var object_store_records=openreq.result.createObjectStore(STORENAME_RECORDS,{keyPath: undefined, autoIncrement: true});
+		        var object_store_tags=openreq.result.createObjectStore(STORENAME_TAGS,{keyPath: undefined, autoIncrement: true});
+		        var object_store_profils=openreq.result.createObjectStore(STORENAME_PROFILS,{keyPath: undefined, autoIncrement: true});
 		        
 		        
+		        init_add_sport=true;
 		        object_store_records.createIndex('parcours_id','parcours_id',{ unique: false });
          };
          
@@ -56,10 +66,12 @@ runrunrun.indexedDB.open=function(){
              
         db = openreq.result;
         
+        if(init_add_sport){add_sports();}
+        console.log("ici");
        console.log(store_sports);
       
-       get_all_sports();
-     
+       get_all_tags();
+     show_list_profil();
       };
 
 		
@@ -68,7 +80,237 @@ runrunrun.indexedDB.open=function(){
 };
 
 
+function show_list_profil(){
+	
+	var select_tags=document.getElementById('profil_edit_list');
+	store_profils=db.transaction(STORENAME_PROFILS, type).objectStore(STORENAME_PROFILS);
 
+	var keyRange = IDBKeyRange.lowerBound(0);
+    var cursorRequest = store_profils.openCursor(keyRange);
+    
+      cursorRequest.onsuccess = function(e){
+       var result = e.target.result;
+       
+       	if(result){
+	       	     //  console.log(result.value.name+" "+result.key);
+	       	       
+	       	       
+	  var elOptNew = document.createElement('option');
+    elOptNew.text = result.value.name;
+    elOptNew.value =result.key;
+	 select_tags.add(elOptNew, null);
+	       	       
+	       	result.continue();
+       	}
+      
+       
+       
+      }
+      cursorRequest.onerror=function(e){
+      
+      console.log("error");
+      
+      }
+	
+	 
+	
+	
+}
+
+function fill_edit_profil_form(profil){
+	console.log(profil);
+	
+	document.getElementById("profil_name_edit").value=profil.value.name;
+	document.getElementById("profil_weight_edit").value=profil.value.weight;
+	document.getElementById("profil_id_edit").value=profil.key;
+	if(profil.value.sex=="M"){
+		
+		document.getElementById('profil_sex_edit').selectedIndex = 0;
+	}else{
+		
+		document.getElementById('profil_sex_edit').selectedIndex = 1;
+	}
+	
+	
+	
+}
+
+
+function load_profil(){
+	
+	console.log(document.getElementById("profil_edit_list").value);
+	
+	var id=parseInt(document.getElementById("profil_edit_list").value);
+
+
+	store_profils=db.transaction(STORENAME_PROFILS, type).objectStore(STORENAME_PROFILS);
+
+	var keyRange = IDBKeyRange.only(id);
+  var cursorRequest = store_profils.openCursor(keyRange);
+  
+  cursorRequest.onsuccess = function(e){
+	  
+	  
+	  var result = e.target.result;
+	    if(!!result == false){
+		    console.log("icie");
+		    
+		    		   console.log("ok");
+		    		   callback(result.value);
+		    return result;
+	    }else{
+		    console.log("lae");
+		   console.log(result.value);
+		   console.log(typeof(callback));
+		   fill_edit_profil_form(result);
+		   if(typeof(callback)!="undefined"){
+			   
+		   }
+		    
+	    }
+	      
+	      
+	      
+	      
+	      
+  }
+  
+  
+  cursorRequest.onerror=function(e){
+  console.log("ou pah");
+  
+  }
+	
+}
+
+function edit_profil(){
+	console.log(document.getElementById("profil_id_edit").value);
+	
+	var profil={};
+	profil.id=document.getElementById("profil_id_edit").value;
+	profil.name=document.getElementById("profil_name_edit").value;
+	profil.weight=document.getElementById("profil_weight_edit").value;
+	profil.sex=document.getElementById("profil_sex_edit").value;
+	profil.active='false';
+	
+	edition_profil(profil);
+	
+	
+	
+}
+
+function edition_profil(profil){
+		
+			var keyRange = IDBKeyRange.only(parseInt(profil.id));
+		store_profils=db.transaction(STORENAME_PROFILS, type).objectStore(STORENAME_PROFILS);
+
+	var cursorRequest = store_profils.openCursor(keyRange);
+	
+	
+	
+	cursorRequest.onsuccess = function(evt){
+	
+	var cursor = evt.target.result;
+  //do the update
+  var objRequest = cursor.update(profil);
+	
+	objRequest.onsuccess = function(ev){
+    console.log('Success in updating record 88');
+    };
+  objRequest.onerror = function(ev){
+    console.log('Error in updating record 88');
+    };
+	
+	
+	
+	
+	};
+	
+	cursorRequest.onerror = function(evt){
+    console.log('Error in retrieving record 88');
+  };
+	
+
+	
+}
+
+
+
+function insert_profil(){
+	
+	var profil={};
+	profil.name=document.getElementById("profil_name_add").value;
+	profil.sex=document.getElementById("profil_sex_add").value;
+	profil.weight=document.getElementById("profil_weight_add").value;
+	profil.active='false';
+
+	add_profil(profil);
+
+}
+
+
+
+function add_profil(profil){
+	
+	store_profils=db.transaction(STORENAME_PROFILS, type).objectStore(STORENAME_PROFILS);
+	var req=store_profils.add(profil);
+	console.log(store_profils);
+	req.onsuccess = function() {
+          console.log('ajouté');
+          //get_all_sports();
+        };
+        req.onerror = function() {
+          console.log('erreur lors de l\'ajout '+req.error.name);
+        };
+}
+
+
+
+function add_sport(sport){
+	
+	console.log("Euh ?"+db);
+store_sports=db.transaction(STORENAME_SPORTS, type).objectStore(STORENAME_SPORTS);
+
+
+	var req=store_sports.add(sport);
+	console.log(store_sports);
+	req.onsuccess = function() {
+          console.log('ajouté');
+          //get_all_sports();
+        };
+        req.onerror = function() {
+          console.log('erreur lors de l\'ajout '+req.error.name);
+        };
+
+	
+	
+}
+
+
+function add_sports(){
+	
+	var sports={};
+	var sport={};
+	/*Base 50kg 1 minute */
+	 
+	sport.name='marche';
+	sport.h_cal=2;
+	sport.f_cal=2;
+	add_sport(sport);
+	
+	sport.name='jogging';
+	sport.h_cal=13;
+	sport.f_cal=12;
+	add_sport(sport);
+
+	sport.name='velo';
+	sport.h_cal=4;
+	sport.f_cal=4;
+	add_sport(sport);
+	
+	
+	
+}
 
 
 
@@ -97,7 +339,7 @@ function remplir_data(){
 
 
 function reset_list(){
-	var formObj =document.getElementById('list_sports');
+	var formObj =document.getElementById('list_tags');
 for (var loop=0; loop < formObj.mySelect.options.length; loop++) {
   formObj.mySelect.options[loop] = null; // remove the option
 }
@@ -105,13 +347,13 @@ for (var loop=0; loop < formObj.mySelect.options.length; loop++) {
 	
 }
 
-function add_sport(name){
+function add_tag(name){
 
-store_sports=db.transaction(STORENAME_SPORTS, type).objectStore(STORENAME_SPORTS);
+store_tags=db.transaction(STORENAME_TAGS, type).objectStore(STORENAME_TAGS);
 
 
-	var req=store_sports.add({name:name});
-	console.log(store_sports);
+	var req=store_tags.add({name:name});
+	console.log(store_tags);
 	req.onsuccess = function() {
           console.log('ajouté');
           //get_all_sports();
@@ -146,25 +388,25 @@ store_records=db.transaction(STORENAME_RECORDS, type).objectStore(STORENAME_RECO
 
 }
 
-function vider_list_sport(index){
+function vider_list_tag(index){
 	
 	
 	
 }
 
-function render_sports(data, id){
+function render_tags(data, id){
 	
-	var select_sports=document.getElementById('list_sports');
+	var select_tags=document.getElementById('list_tags');
 	var elOptNew = document.createElement('option');
     elOptNew.text = data.name;
     elOptNew.value = id;
-	 select_sports.add(elOptNew, null); 
+	 select_tags.add(elOptNew, null); 
 	 
-	 var select_sports=document.getElementById('choice_sports');
+	 var select_tags=document.getElementById('choice_tags');
 	var elOptNew = document.createElement('option');
     elOptNew.text = data.name;
     elOptNew.value = id;
-	 select_sports.add(elOptNew, null); 
+	 select_tags.add(elOptNew, null); 
 	 
 	 
 	 
@@ -178,12 +420,20 @@ var wait10sec=function(){
 
 
 
-function remove_sport_from_list(id){
+function fill_select_tag(){
+	
+	document.getElementById("choice_tag")
+	
+	
+}
 
 
-	var select_sports=document.getElementById('list_sports');
+function remove_tag_from_list(id){
 
-select_sports.remove(id);
+
+	var select_tags=document.getElementById('list_tags');
+
+select_tags.remove(id);
 
 }
 
@@ -195,19 +445,19 @@ function test(){
 	}
 }
 
-function get_all_sports(){
+function get_all_tags(){
 	
-	store_sports=db.transaction(STORENAME_SPORTS, type).objectStore(STORENAME_SPORTS);
+	store_tags=db.transaction(STORENAME_TAGS, type).objectStore(STORENAME_TAGS);
 
 	var keyRange = IDBKeyRange.lowerBound(0);
-    var cursorRequest = store_sports.openCursor(keyRange);
+    var cursorRequest = store_tags.openCursor(keyRange);
     
       cursorRequest.onsuccess = function(e){
        var result = e.target.result;
        
        	if(result){
 	       	     //  console.log(result.value.name+" "+result.key);
-	       	       render_sports(result.value, result.key);
+	       	       render_tags(result.value, result.key);
 	       	result.continue();
        	}
       
@@ -262,11 +512,25 @@ var compteur=0;
     cursor.continue();
     compteur++;
   }
-  document.getElementById('zone_json').value=JSON.stringify(json);
+  
+  var stringifyjson=JSON.stringify(json);
+  
+  var newtstring=stringifyjson.replace(/\\("|'|\\)/g, "$1");
+
+  document.getElementById('zone_json').value=stringifyjson;
+   document.getElementById('input_json').value=stringifyjson;
+   document.getElementById('mail').innerHTML='<a href=mailto:simon51100%40gmail.com?body='+newtstring+'>Mail</a>';
 };
 }
 
+function see_ongmaps(id){
 
+
+
+
+	get_parcours(id,work_on_parcours);
+
+}
 
 function get_parcours(id, callback){
 console.log("callback "+callback);
@@ -293,7 +557,7 @@ var id=parseInt(id);
 		   console.log(result.value);
 		   console.log(typeof(callback));
 		   if(typeof(callback)!="undefined"){
-			   callback(result.value);
+			   callback(result);
 		   }
 		    
 	    }
@@ -315,11 +579,11 @@ var id=parseInt(id);
 }
 
 
-function get_sport(id, callback, callback2){
-	store_sports=db.transaction(STORENAME_SPORTS, type).objectStore(STORENAME_SPORTS);
+function get_tags(id, callback, callback2){
+	store_tags=db.transaction(STORENAME_TAGS, type).objectStore(STORENAME_TAGS);
 
 	var keyRange = IDBKeyRange.only(parseInt(id));
-  var cursorRequest = store_sports.openCursor(keyRange);
+  var cursorRequest = store_tags.openCursor(keyRange);
   
   cursorRequest.onsuccess = function(e){
 	  
@@ -351,24 +615,24 @@ function get_sport(id, callback, callback2){
 }
 
 
-function form_edit_sport(form){
+function form_edit_tag(form){
 	
 	var value=form.input_edit_sport.value;
-	var selected_index=form.list_sports.selectedIndex;
-var id=form.list_sports[selected_index].value;
+	var selected_index=form.list_tags.selectedIndex;
+var id=form.list_tags[selected_index].value;
 	var data={name:value};
-	update_sport(parseInt(id), data);
+	update_tag(parseInt(id), data);
 	
 }
 
 
 function form_delete_sport(form){
 
-var selIndex=form.elements['list_sports'].selectedIndex;
-var newSel=form.elements['list_sports'].options[selIndex].value;
+var selIndex=form.elements['list_tags'].selectedIndex;
+var newSel=form.elements['list_tags'].options[selIndex].value;
 
 
- delete_sport(newSel);
+ delete_tag(newSel);
 		
 	
 		
@@ -440,17 +704,12 @@ var update_parcours= function(id, data){
 }
 
 
-
-
-
-
-function update_sport(id, data){
-	console.log(id);
-	console.log(typeof(id));
+function update_tag(id, data){
+	
 	var keyRange = IDBKeyRange.only(id);
-		store_sports=db.transaction(STORENAME_SPORTS, type).objectStore(STORENAME_SPORTS);
+		store_tags=db.transaction(STORENAME_TAGS, type).objectStore(STORENAME_TAGS);
 
-	var cursorRequest = store_sports.openCursor(keyRange);
+	var cursorRequest = store_tags.openCursor(keyRange);
 	
 	
 	
@@ -520,14 +779,14 @@ var id=parseInt(id);
 
 
 
-function delete_sport(id){
+function delete_tag(id){
 console.log(typeof(id));
 var id=parseInt(id);
 
 //reset_list();
-	store_sports=db.transaction(STORENAME_SPORTS, type).objectStore(STORENAME_SPORTS);
+	store_tags=db.transaction(STORENAME_TAGS, type).objectStore(STORENAME_TAGS);
 	
-	var request=store_sports.delete(id);
+	var request=store_tags.delete(id);
 	
 	request.onsuccess=function (e){
 	
@@ -541,7 +800,7 @@ var id=parseInt(id);
 
 //store_sports.delete(id);
 	var keyRange = IDBKeyRange.only(id);
-  var cursorRequest = store_sports.openCursor(keyRange);
+  var cursorRequest = store_tags.openCursor(keyRange);
  
  
  
@@ -639,8 +898,10 @@ function render_parcours(data, id){
 			}
 			var cell=row.insertCell(cnt_row);
 	         
-	          cell.innerHTML='<input type="button" value=" Supprimer parcours" onclick="delete_parcours('+id+');" /><input type="button" value=" Voir records" onclick="see_records('+id+');" /><input type="button" value=" Voir records JSON" onclick="records_to_json('+id+');" />';
-	          
+	          cell.innerHTML='<input type="button" value=" Supprimer parcours" onclick="delete_parcours('+id+');" /><input type="button" value=" Voir records" onclick="see_records('+id+');" /><input type="button" value=" Voir records JSON" onclick="records_to_json('+id+');" /><input type="button" value=" Voir sur Gmaps" onclick="see_ongmaps('+id+');" />';
+	         
+	         
+	         
 	         
 }
 
@@ -701,18 +962,146 @@ function list_parcours(){
 }
 
 
-function input_json(){
+var work_on_parcours=function(parcours_data){
+
+	console.log(parcours_data);
+	store_records=db.transaction(STORENAME_RECORDS, type).objectStore(STORENAME_RECORDS);
+	 var index = store_records.index("parcours_id");
+	 //var cursorReq = index.openKeyCursor();
+	 var singleKeyRange = IDBKeyRange.only(parcours_data.key);
+	 
+	 delete_table_record("list_records");
+	 var distance=null;
+	 var vitesse_max=0;
+	 var min_ts=null;
+	 var max_ts=null;
+	 var vitesse_max=0;
+	 var alti_max=null;
+	  var path_polyline = new Array();
+
+  var old_lati=null;
+  var old_longi=null;
+	index.openCursor(singleKeyRange).onsuccess = function(event) {
+  var cursor = event.target.result;
+  
+    console.log("ici");
+  if (cursor) {
+
+  		//On calcule la distance
+  		
+  		if(min_ts==null && max_ts==null){
+	  		
+	  		
+	  		min_ts=cursor.value.timestamp;
+	  		max_ts=cursor.value.timestamp;
+  		}
+  		
+   		if(old_lati!=null || old_longi!=null){
+	   		
+	   		
+	   		distance=distance+CalcDistanceBetween(old_lati, old_longi,cursor.value.latitude,cursor.value.longitude);
+	   		
+   		}
+   		
+   		//On cree la polyline
+   		var p = new google.maps.LatLng(cursor.value.latitude, cursor.value.longitude);
+		path_polyline.push(p);
+   		
+   		
+   		//On calcule la vitesse max
+   		if(cursor.value.speed>=vitesse_max){
+	   		vitesse_max=cursor.value.speed;
+	   		
+   		}
+   		
+	   	//On calcule le timestamp de debut et le timestamp de fin
+	   	
+	   	if(cursor.value.timestamp>max_ts){
+		   	max_ts=cursor.value.timestamp;
+		   	
+	   	}
+	   		old_lati=cursor.value.latitude;
+	   		old_longi=cursor.value.longitude;
+	   		console.log(event.target.result);
+	   		var retour=cursor.continue();
+	   		
+	   		
+	   		//console.log("Cursor "+cursor.continue());
+            //cursor.continue();
+  }else{
+	  
+	   console.log("Distance "+distance);
+	    var duree_ms=max_ts-min_ts;
+  console.log("Duree "+format_heure(duree_ms));
+  console.log("Vitesse maximale "+vitesse_max);
+  
+   polyline(path_polyline);
+   center_map(old_lati,old_longi);
+   alert('Fini');
+  }
+ 
+  
+ 
+};
+
 	
-	console.log(document.getElementById("input_json").value);
+}
+
+
+function format_heure(date_ms){
+	
+	var duree_s=date_ms/1000;
+	
+	
+	var d=new Date(date_ms);
+	return d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"";
+}
+
+
+function force_insert(){
+	
+	
+	add_parcours("Input force", input_json);
+	
+}
+
+var input_json=function(pid){
+	
+	//var myObject=JSON.eval(document.getElementById("input_json").value);
+	var objet2=JSON.parse(document.getElementById("input_json").value);
+	
+	console.log(objet2.hasOwnProperty(length).value);
+	//console.log(objet2.length);
+	for(var x in objet2){
+	console.log(x);
+		var record=objet2[x];
+		console.log(objet2);
+		var new_obj = {};
+		new_obj.latitude=record.latitude;
+		new_obj.longitude=record.longitude;
+		new_obj.timestamp=record.timestamp;
+		new_obj.altitude=record.altitutde;
+		new_obj.accuracy=record.accuracy;
+		new_obj.altitudeAccuracy=record.altitutdeAccuracy;
+		new_obj.heading=record.heading;
+		new_obj.speed=record.speed;
+		new_obj.parcours_id=pid;
+		
+		
+		console.log(new_obj);	
+		add_record(new_obj);
+		x++;
+	}
+	
 	
 }
 
 
 function start_parcours(form){
 	
-	var selectedIndex=form.elements['choice_sports'].selectedIndex;
-var id=form.elements['choice_sports'].options[selectedIndex].value;
-	get_sport(id, add_parcours, start_gps);
+	var selectedIndex=form.elements['choice_tags'].selectedIndex;
+var id=form.elements['choice_tags'].options[selectedIndex].value;
+	get_tag(id, add_parcours, start_gps);
 	
 }
 
