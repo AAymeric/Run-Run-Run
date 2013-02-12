@@ -1,0 +1,240 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  color: #333333;
+  background-color: #ffffff;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.container {
+	margin-right: auto;
+	margin-left: auto;
+	width: auto;
+	min-width: 300px;
+	overflow: auto;
+	padding: 0;
+}
+.none {
+	display: none;
+}
+
+/**********
+	TOP
+***********/
+#top {
+	position: relative;
+	z-index: 100;
+	background-color: #0088CC;
+    background-repeat: repeat-x;
+    border-color: #0088CC;
+    padding: 0;
+}
+#top h1 {
+	color: white;
+	font-size: 20px;
+	font-weight: 200;
+    letter-spacing: -1px;
+    margin: 13px 0;
+    cursor: pointer;
+}
+#logo {
+	float: left;
+	cursor: pointer;
+}
+
+/**********
+	PAGE
+***********/
+.page {
+	text-align: center;
+}
+.page-grey {
+	background-color: #FAFAFA;
+	background-image: linear-gradient(to bottom, #FFFFFF, #F2F2F2);
+	border-color: #D4D4D4;
+	border-style: solid;
+	border-width: 1px 0;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067);
+	margin-bottom: 5px;
+}
+.page-block {
+	width: 270px;
+	overflow: hidden;
+	margin: auto;
+	padding: 8px 0;
+}
+.page h1 {
+	color: #0088CC;
+	font-size: 40px;
+	font-weight: 400;
+	letter-spacing: -4px;
+	margin: 25px 0 35px 0;
+}
+.page label {
+	float: left;
+	font-size: 24px;
+	margin-top: 3px;
+}
+.page select {
+	border-radius: 4px;
+    color: #555555;
+    font-size: 18px;
+    float: right;
+}
+.page option {
+	font-size: 18px;
+}
+#start {
+	width: 75px;
+	height: 25px;
+	border: 1px #D4D4D4 solid;
+	background: #aac900;
+	color: white;
+	margin: 5px auto 0 auto;
+	padding: 5px;
+	border-radius: 4px;
+}
+#start h2 {
+	font-weight: normal;
+	margin-top: 2px;
+}
+
+/*************
+	FOOTER
+**************/
+#footer {
+	bottom: 0;
+	left: 0;
+    margin-bottom: 0;
+    position: fixed;
+    right: 0;
+    z-index: 1030;
+    clear: both;
+}
+#nav-bar {
+	min-height: 40px;
+	display:block;
+	width:100%;
+	text-align:center;
+    overflow: hidden;
+    padding: 5px 0 0 0;
+    border-width: 1px 0 0;
+    border-style: solid;
+    border-color: #d4d4d4;
+    background-color: #fafafa;
+    background-repeat: repeat-x;
+    background-image: -moz-linear-gradient(top, #ffffff, #f2f2f2);
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#f2f2f2));
+	background-image: -webkit-linear-gradient(top, #ffffff, #f2f2f2);
+	background-image: -o-linear-gradient(top, #ffffff, #f2f2f2);
+	background-image: linear-gradient(to bottom, #ffffff, #f2f2f2);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff2f2f2', GradientType=0);
+	*zoom: 1;
+	-webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+	-moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+}
+.nav-icon {
+	width: 34px;	
+	height: 27px;
+	overflow: hidden;
+	margin: 0 auto;
+	display: inline-block;
+	padding: 5px 20px;
+}
+#nav-icon-mid {
+	border-left: 1px #0088CC solid;
+	border-right: 1px #0088CC solid;
+	margin: auto;
+}
+.picto {
+	width: 34px;	
+	height: 27px;
+	margin: auto;
+	cursor: pointer;
+}
+#picto-new {
+	background: url(../img/glyphicons_190_circle_plus.png);
+}
+#picto-list {
+	background: url(../img/glyphicons_114_list.png);
+}
+#picto-config {
+	background: url(../img/glyphicons_137_cogwheels.png);
+}
+
+/**********
+	HOME
+***********/
+#hp {
+	width: 100%;
+    height: 629px;
+    display: block;
+    background: url(../img/a2.jpg) no-repeat;
+    position: fixed;
+}
+#element {
+	background-image: -moz-radial-gradient(center center, circle contain, rgba(255, 255, 255, 1) 40%, rgba(255, 255, 255, 0) 100%);
+	background-image: -webkit-radial-gradient(center center, circle contain, rgba(255, 255, 255, 1) 40%, rgba(255, 255, 255, 0) 100%);
+	width: 500px;
+	height: 500px;
+	position: fixed;
+	left: 50%;
+	top: 50%;
+	margin: -215px 0 0 -250px;
+}
+#titre {
+	margin: 0;
+	text-align: center;
+	position: fixed;
+	left: 0;
+	top: 49%;
+	width: 100%;
+}
+#titre h1, #titre h2 {
+	color: #0088CC;
+	font-size: 64px;
+	font-weight: 400;
+	letter-spacing: -4px;
+	display: block;
+	margin: 0;
+	padding: 0;
+}
+#titre h2 {
+	font-size: 44px;
+	color: #45a4dc;
+	margin: 25px 0 0 0;
+}
+
+/*****************
+	RESPONSIVE
+******************/
+@media (max-height: 300px), (max-width: 500px) {
+	#titre h1 {
+		font-size: 36px;
+	}
+	#titre h2 {
+		font-size: 28px;
+		margin: 8px 0 0 0;
+	}
+	#element {
+		width: 300px;
+		height: 300px;
+		margin: -120px 0 0 -150px;
+	}
+}
+
+/**********
+	RESET
+***********/
+span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
+	background: none repeat scroll 0 0 transparent;
+	border: 0 none;
+	margin: 0;
+	outline: 0 none;
+	padding: 0;
+}
