@@ -28,6 +28,10 @@ function successCallback(position){
 	 
 	  //get_parcours(parcours_id,update_parcours(parcours_id,newobj));
 	 
+  }else{
+	  
+	  
+	  
   }
   
   var obj = {};
@@ -40,6 +44,9 @@ function successCallback(position){
   obj.heading=position.coords.heading;
   obj.speed=position.coords.speed;
   obj.parcours_id=parcours_id;
+  
+  
+  update_display(obj);
   
   add_record(obj)
 cpt++;
@@ -59,8 +66,8 @@ function errorCallback(error){
     }
 };
  
-  function stopWatch(){
-  
+  function stopWatch(compte){
+  clearTimeout(compte);
     var newobj={};
 	  newobj.StopTime=new Date().getTime();	  
 	  
@@ -68,6 +75,8 @@ function errorCallback(error){
   get_parcours_and_finish(parcours_id,newobj);
   
   navigator.geolocation.clearWatch(watchId);
+  reset_parcours_list();
+  flyto("parcours_list");
   } 
 
 

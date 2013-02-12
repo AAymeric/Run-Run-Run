@@ -1,0 +1,161 @@
+<html>
+<head>
+<!-- <script src="storage_lib.js" ></script>-->
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+
+<script src="js/dom.js"></script>
+<script src="js/db_mgnt.js"></script>
+<script src="js/geolocation.js"></script>
+<script src="js/gmaps.js"></script>
+<script>
+runrunrun.indexedDB.open();
+</script>
+  <style type="text/css">
+    #container{position:relative;width:990px;margin:auto;}
+    #container #map{width:500px;height:500px;margin:auto;}
+  </style>
+</head>
+
+
+<body onload="">
+<h2> Profils</h2>
+<fieldset>
+
+<legend>Profil</legend>
+Nom : <input type="text" name="profil_name" id="profil_name_add"/>
+Poids : <input type="text" name="profil_weight" id="profil_weight_add" />
+Sexe :  <select id="profil_sex_add" name="profil_sex_add"><option value="M">Homme</option><option value="w">Femme</option></select>
+<input type="button" value="add profil" onclick="insert_profil();" />
+</fieldset>
+<fieldset>
+<legend>List Profil</legend>
+
+<select name="" id="profil_edit_list"></select><input type="button" value="Editer" onclick="load_profil()" />
+</fieldset>
+
+
+
+<fieldset>
+<legend>Edit Profil</legend>
+Nom : <input type="text" name="profil_name" id="profil_name_edit"/>
+Poids : <input type="text" name="profil_weight" id="profil_weight_edit" />
+Sexe :  <select id="profil_sex_edit" name="profil_sex_edit"><option value="M">Homme</option><option value="w">Femme</option></select>
+<input type="hidden" id="profil_id_edit" name="profil_id_edit" />
+<input type="hidden" id="profil_active_edit" name="profil_active_edit" />
+<input type="button" value="edit profil" onclick="edit_profil();" />
+</fieldset>
+
+
+<h2>Sports</h2>
+
+<div data-role="tag_edit">
+<fieldset>
+
+<legend>
+Liste des tags</legend>
+	<form name="runrunrun" onsubmit="form_delete_tag(this); return false;" id="run" >
+		<select name="list_sports" id="list_tags">
+
+		</select>
+<input type="button" value="editer" onclick="form_edit_tag(this.form);" />
+<input type="text" value="" id="input_edit_sport" />
+<input type="button" value="effacer" onclick="form_delete_tag(this.form);" />
+</form>
+
+</fieldset>
+</div>
+<div data-role="sport_add">
+<fieldset>
+
+<legend>
+Ajouter un tag</legend>
+<form>
+<input type="text" name="add_tag" id="add_tag"  />
+<input type="button" value="ajouter" onclick="form_get_data('add_tag', this.form);" />
+
+</fieldset>
+
+</div>
+
+<h2>Parcours</h2>
+<fieldset>
+<legend>Ajouter un parcours</legend>
+<form>
+Sport : 
+<select  name="choice_sports" id="choice_sports">
+
+		</select>
+		<select name="choice_tag" id="choice_tag">
+		</select>
+		<input type="button"  value="ajouter parcours" onclick="start_parcours(this.form);" /> 
+		<input type="button" value="stopper parcours" onclick="stop_parcours();" />
+</form>
+</fieldset>
+<fieldset>
+<legend>Tous les parcours</legend>
+<table border="1" id="list_parcours">
+<tr>
+	<th></th>
+	<th>Nom</th>
+	<th>Sport</th>
+	<th>Heure "start"</th>
+	<th>Heure "stop"</th>
+	<th>Durée</th>
+	<th>Lat départ</th>
+	<th>Long départ</th>
+	<th>id</th>
+	
+</tr>
+</table>
+</fieldset>
+<input type="button" value="tous les parcours" onclick="list_parcours();" />
+
+<input type="button" value="Lancer tracking" onclick="start_gps();" />
+<input type="button" value="Stopper tracking" onclick="stopWatch();" />
+
+<input type="button" value="Ajouter data" onclick="remplir_data();" />
+
+<fieldset>
+	<legend>Voir enregistrements</legend>
+	<table border="1" id="list_records">
+	<tr>
+		<th>latitude</th>
+		<th>longitude</th>
+		<th>timestamp</th>
+		<th>accuracy</th>
+		<th>altitudeAccuracy</th>
+		<th>altitude</th>
+		<th>speed</th>
+		<th>heading</th>
+		<th>See on google maps</th>
+	</tr>	
+	
+	
+
+	
+	</table>
+	
+</fieldset>
+<div id="container">
+<div id="map">
+
+
+</div>
+</div>
+<textarea cols="50" rows="50" id="zone_json">
+</textarea>
+
+<textarea cols="50" rows="50" id="input_json">
+</textarea><input type="button" value="vaider input json" onclick="force_insert();"/>
+<div id="mail"></div>
+<div id="log"></div>
+<div id="current">
+	<p>Distance : </p>
+</div>
+</body>
+
+
+
+
+
+</html>

@@ -1,6 +1,7 @@
 
 var runrunrun = {};
 var sports = {};
+var current_profil=1; //A enlever
 runrunrun.indexedDB = {};
 runrunrun.indexedDB.db=null;
 var db=null;
@@ -45,17 +46,19 @@ runrunrun.indexedDB.open=function(){
 		
 		  var openreq = indexedDB.open(DBNAME, DBVERSION);
 		  
-		  openreq.onerror = function withStoreOnError() {
+		  openreq.onblocked = function withStoreOnError() {
 			  	console.error("asyncStorage: can't open database:", openreq.error.name);
 		  };
 		  openreq.onupgradeneeded = function withStoreOnUpgradeNeeded() {
         
-        		var object_store_conf=openreq.result.createObjectStore(STORENAME_CONF,{keyPath: undefined, autoIncrement: true });
-		        var object_store_sports=openreq.result.createObjectStore(STORENAME_SPORTS,{ keyPath: undefined , autoIncrement: true });
-		        var object_store_parcours=openreq.result.createObjectStore(STORENAME_PARCOURS,{ keyPath: undefined, autoIncrement: true});
-		        var object_store_records=openreq.result.createObjectStore(STORENAME_RECORDS,{keyPath: undefined, autoIncrement: true});
-		        var object_store_tags=openreq.result.createObjectStore(STORENAME_TAGS,{keyPath: undefined, autoIncrement: true});
-		        var object_store_profils=openreq.result.createObjectStore(STORENAME_PROFILS,{keyPath: undefined, autoIncrement: true});
+       
+        
+        		object_store_conf=openreq.result.createObjectStore(STORENAME_CONF,{keyPath: undefined, autoIncrement: true });
+		        object_store_sports=openreq.result.createObjectStore(STORENAME_SPORTS,{ keyPath: undefined , autoIncrement: true });
+		        object_store_parcours=openreq.result.createObjectStore(STORENAME_PARCOURS,{ keyPath: undefined, autoIncrement: true});
+		        object_store_records=openreq.result.createObjectStore(STORENAME_RECORDS,{keyPath: undefined, autoIncrement: true});
+		        object_store_tags=openreq.result.createObjectStore(STORENAME_TAGS,{keyPath: undefined, autoIncrement: true});
+		        object_store_profils=openreq.result.createObjectStore(STORENAME_PROFILS,{keyPath: undefined, autoIncrement: true});
 		        
 		        
 		        init_add_sport=true;
@@ -67,11 +70,12 @@ runrunrun.indexedDB.open=function(){
         db = openreq.result;
         
         if(init_add_sport){add_sports();}
-        console.log("ici");
-       console.log(store_sports);
+        
       
        get_all_tags();
+       get_all_sports();
      show_list_profil();
+     update_parcours_list();
       };
 
 		
@@ -117,6 +121,128 @@ function show_list_profil(){
 	
 }
 
+var add_parcours_to_list=function(key,item, item2){
+	console.log(item2);
+	var ul=document.getElementById('ul_parcours');
+	var li = document.createElement("li");
+	li.appendChild(document.createTextNode(""+item.name+" - "+item2.marche));
+	ul.appendChild(li);
+	console.log(item);
+	li.addEventListener("click",function(){ get_info_parcours(key);}, false); 
+		
+}
+
+
+function declenchement(item){
+	
+	
+	console.log("déclenché "+item);
+}
+var get_info_parcours=function(id){
+	
+	var ret1=test1();
+	var ret2=test2();
+	var objet=null;
+	console.log("objet "+typeof(objet));
+	while(typeof (objet=detail_parcours(id, this)) !=="undefined"){
+		console.log(objet);
+		
+	}
+	
+	setTimeout(function(){console.log("toto"+objet);declenchement(objet); return "toto";},5000)
+	
+}
+
+
+function test1(){
+	
+	setTimeout(function(){console.log("ok 1"); return "toto";},5000)
+	
+}
+
+
+
+function test2(){
+	
+	setTimeout(function(){console.log("ok 2");return "tata";},5000)
+	
+}
+
+
+
+function detail_parcours(id, ref){
+
+		console.log(ref);
+
+	store_parcours=db.transaction(STORENAME_PARCOURS, type).objectStore(STORENAME_PARCOURS);
+
+	var keyRange = IDBKeyRange.only(parseInt(id));
+	console.log(keyRange);
+  var cursorRequest = store_parcours.openCursor(keyRange);
+  
+  cursorRequest.onsuccess = function(e){
+	  
+	  
+	  var result = e.target.result;
+	  console.log(result);
+	    if(!!result == false){
+		   console.log("ici");
+	    }else{
+	    
+		   fill_parcours_detail(result.value, "parcours")
+			  	    
+		    		  console.log("ok :"+result); 
+		   }
+		    
+	    
+	      
+	      
+	      
+	      
+	      
+  }
+  
+  
+  cursorRequest.onerror=function(e){
+  console.log("ou pah");
+  
+  }
+}
+
+
+function update_parcours_list(){
+
+store_parcours=db.transaction(STORENAME_PARCOURS, type).objectStore(STORENAME_PARCOURS);
+
+	var keyRange = IDBKeyRange.lowerBound(0);
+    var cursorRequest = store_parcours.openCursor(keyRange);
+    
+      cursorRequest.onsuccess = function(e){
+       var result = e.target.result;
+       
+       	if(result){
+       	console.log(result.value);
+	       	     //  console.log(result.value.name+" "+result.key);
+	       	    
+	       	     get_sport(result.value.sport, result.value, add_parcours_to_list, result.key);
+
+	       	       	       	result.continue();
+       	}
+      
+       
+       
+      }
+      cursorRequest.onerror=function(e){
+      
+      console.log("error");
+      
+      }
+	
+	
+}
+
+
+
 function fill_edit_profil_form(profil){
 	console.log(profil);
 	
@@ -136,9 +262,34 @@ function fill_edit_profil_form(profil){
 }
 
 
+
+function del_tag(){
+var element=document.getElementById("tag_edit_list");
+var id=element.value;
+var index=element.selectedIndex;
+	
+	delete_tag(id, delete_option_from_list("tag_edit_list",index));
+	
+	
+	
+}
+
+function del_profil(){
+var element=document.getElementById("profil_edit_list");
+var id=element.value;
+var index=element.selectedIndex;
+	
+	delete_profil(id, delete_option_from_list("profil_edit_list",index));
+	
+	
+	
+}
+
+
+
+
 function load_profil(){
 	
-	console.log(document.getElementById("profil_edit_list").value);
 	
 	var id=parseInt(document.getElementById("profil_edit_list").value);
 
@@ -163,6 +314,7 @@ function load_profil(){
 		   console.log(result.value);
 		   console.log(typeof(callback));
 		   fill_edit_profil_form(result);
+		   flyto("profil_edit");
 		   if(typeof(callback)!="undefined"){
 			   
 		   }
@@ -184,7 +336,6 @@ function load_profil(){
 }
 
 function edit_profil(){
-	console.log(document.getElementById("profil_id_edit").value);
 	
 	var profil={};
 	profil.id=document.getElementById("profil_id_edit").value;
@@ -215,10 +366,9 @@ function edition_profil(profil){
   var objRequest = cursor.update(profil);
 	
 	objRequest.onsuccess = function(ev){
-    console.log('Success in updating record 88');
-    };
+    flyto("profil_list");    };
   objRequest.onerror = function(ev){
-    console.log('Error in updating record 88');
+    flyto("profil_list");
     };
 	
 	
@@ -249,15 +399,32 @@ function insert_profil(){
 }
 
 
+function insert_tag(){
+	
+	var tag={};
+	tag.name=document.getElementById("tag_name_add").value;
+	
+
+	add_tag(tag.name);
+
+}
+
+
 
 function add_profil(profil){
 	
 	store_profils=db.transaction(STORENAME_PROFILS, type).objectStore(STORENAME_PROFILS);
 	var req=store_profils.add(profil);
 	console.log(store_profils);
-	req.onsuccess = function() {
-          console.log('ajouté');
-          //get_all_sports();
+	req.onsuccess = function(e) {
+	var obj={};
+	obj.key=e.target.result;
+	obj.name=profil.name;
+		
+			add_option_to_list("profil_edit_list",obj,flyto("profil_list"));
+          console.log(e.target.result);
+          //Update of the list with id and name
+          
         };
         req.onerror = function() {
           console.log('erreur lors de l\'ajout '+req.error.name);
@@ -285,6 +452,10 @@ store_sports=db.transaction(STORENAME_SPORTS, type).objectStore(STORENAME_SPORTS
 	
 	
 }
+
+
+	
+
 
 
 function add_sports(){
@@ -349,17 +520,21 @@ for (var loop=0; loop < formObj.mySelect.options.length; loop++) {
 
 function add_tag(name){
 
-store_tags=db.transaction(STORENAME_TAGS, type).objectStore(STORENAME_TAGS);
+var store_tags=db.transaction(STORENAME_TAGS, type).objectStore(STORENAME_TAGS);
 
 
 	var req=store_tags.add({name:name});
-	console.log(store_tags);
-	req.onsuccess = function() {
-          console.log('ajouté');
-          //get_all_sports();
+	req.onsuccess = function(e) {
+          var obj={};
+	obj.key=e.target.result;
+	obj.name=name;
+		
+			add_option_to_list("tag_edit_list",obj,flyto("tag_list"));
+			add_option_to_list("choice-tags",obj);
+          
         };
         req.onerror = function() {
-          console.log('erreur lors de l\'ajout '+req.error.name);
+         
         };
 
 	
@@ -394,15 +569,31 @@ function vider_list_tag(index){
 	
 }
 
+
+function render_sports(data, id){
+	
+	var select_sports=document.getElementById('choice-sports');
+	var elOptNew = document.createElement('option');
+    elOptNew.text = data.name;
+    elOptNew.value = id;
+	 select_sports.add(elOptNew, null); 
+	
+	 
+	 
+	 
+}
+
+
+
 function render_tags(data, id){
 	
-	var select_tags=document.getElementById('list_tags');
+	var select_tags=document.getElementById('tag_edit_list');
 	var elOptNew = document.createElement('option');
     elOptNew.text = data.name;
     elOptNew.value = id;
 	 select_tags.add(elOptNew, null); 
 	 
-	 var select_tags=document.getElementById('choice_tags');
+	 var select_tags=document.getElementById('choice-tags');
 	var elOptNew = document.createElement('option');
     elOptNew.text = data.name;
     elOptNew.value = id;
@@ -422,7 +613,7 @@ var wait10sec=function(){
 
 function fill_select_tag(){
 	
-	document.getElementById("choice_tag")
+	document.getElementById("choice_tag");
 	
 	
 }
@@ -447,7 +638,7 @@ function test(){
 
 function get_all_tags(){
 	
-	store_tags=db.transaction(STORENAME_TAGS, type).objectStore(STORENAME_TAGS);
+	var store_tags=db.transaction(STORENAME_TAGS, type).objectStore(STORENAME_TAGS);
 
 	var keyRange = IDBKeyRange.lowerBound(0);
     var cursorRequest = store_tags.openCursor(keyRange);
@@ -473,6 +664,36 @@ function get_all_tags(){
   
 	
 }
+
+function get_all_sports(){
+	
+	store_sports=db.transaction(STORENAME_SPORTS, type).objectStore(STORENAME_SPORTS);
+
+	var keyRange = IDBKeyRange.lowerBound(0);
+    var cursorRequest = store_sports.openCursor(keyRange);
+    
+      cursorRequest.onsuccess = function(e){
+       var result = e.target.result;
+       
+       	if(result){
+	       	     //  console.log(result.value.name+" "+result.key);
+	       	       render_sports(result.value, result.key);
+	       	result.continue();
+       	}
+      
+       
+       
+      }
+      cursorRequest.onerror=function(e){
+      
+      console.log("error");
+      
+      }
+
+  
+	
+}
+
 
 function see_records(parcours){
 	store_records=db.transaction(STORENAME_RECORDS, type).objectStore(STORENAME_RECORDS);
@@ -533,7 +754,6 @@ function see_ongmaps(id){
 }
 
 function get_parcours(id, callback){
-console.log("callback "+callback);
 var id=parseInt(id);
 
 
@@ -553,9 +773,7 @@ var id=parseInt(id);
 		    		   callback(result.value);
 		    return result;
 	    }else{
-		    console.log("lae");
-		   console.log(result.value);
-		   console.log(typeof(callback));
+		    
 		   if(typeof(callback)!="undefined"){
 			   callback(result);
 		   }
@@ -577,6 +795,81 @@ var id=parseInt(id);
 
 
 }
+
+
+function get_profil_name(id){
+console.log("Id "+id+" fin id");
+	store_profils=db.transaction(STORENAME_PROFILS, type).objectStore(STORENAME_PROFILS);
+
+	var keyRange = IDBKeyRange.only(parseInt(id));
+  var cursorRequest = store_profils.openCursor(keyRange);
+  
+  cursorRequest.onsuccess = function(e){
+	  
+	  
+	  var result = e.target.result;
+	    if(!!result == false){
+		    console.log("ici");
+		    console.log(result);
+		    
+	    }else{
+		    
+		      console.log("la");
+	console.log("PROFIL "+result.value.name);
+	     fill_parcours_profil(result.value.name);
+	    }
+	   
+	    
+	      //console.log(result.value);
+  }
+  
+  
+  cursorRequest.onerror=function(e){
+  
+  	console.log(e);
+  }
+
+
+}
+
+
+
+
+
+function get_tag_name(id){
+console.log("Id "+id+" fin id");
+		store_tags=db.transaction(STORENAME_TAGS, type).objectStore(STORENAME_TAGS);
+
+	var keyRange = IDBKeyRange.only(parseInt(id));
+  var cursorRequest = store_tags.openCursor(keyRange);
+  
+  cursorRequest.onsuccess = function(e){
+	  
+	  
+	  var result = e.target.result;
+	    if(!!result == false){
+		    		    
+	    }else{
+		    console.log("TAG "+result.value.name);
+	fill_parcours_tag(result.value.name);
+	     
+	    }
+	   	  
+	    
+	      //console.log(result.value);
+  }
+  
+  
+  cursorRequest.onerror=function(e){
+  
+  	return "erreur";
+  }
+
+
+
+}
+
+
 
 
 function get_tags(id, callback, callback2){
@@ -669,8 +962,7 @@ function form_get_data(action, referer){
 
 
 var update_parcours= function(id, data){
-	console.log("ID "+id);
-	console.log(data);
+	
 	var keyRange = IDBKeyRange.only(parseInt(id));
 		store_parcours=db.transaction(STORENAME_PARCOURS, type).objectStore(STORENAME_PARCOURS);
 
@@ -681,7 +973,7 @@ var update_parcours= function(id, data){
 	cursorRequest.onsuccess = function(evt){
 	
 	var cursor = evt.target.result;
-  //do the update
+  
   var objRequest = cursor.update(data);
 	
 	objRequest.onsuccess = function(ev){
@@ -707,7 +999,7 @@ var update_parcours= function(id, data){
 function update_tag(id, data){
 	
 	var keyRange = IDBKeyRange.only(id);
-		store_tags=db.transaction(STORENAME_TAGS, type).objectStore(STORENAME_TAGS);
+	store_tags=db.transaction(STORENAME_TAGS, type).objectStore(STORENAME_TAGS);
 
 	var cursorRequest = store_tags.openCursor(keyRange);
 	
@@ -745,6 +1037,65 @@ function supprimer_parcours(){
 		delete_parcours(i);
 	}
 	
+}
+
+function delete_tag(id, callback){
+var id=parseInt(id);
+
+//reset_list();
+	store_tag=db.transaction(STORENAME_TAGS, type).objectStore(STORENAME_TAGS);
+	
+	var request=store_tag.delete(id);
+	
+	request.onsuccess=function (e){
+	callback;
+	console.log(e+" eok");
+	}
+	
+	
+	request.onerror = function(e) {
+    console.log(e+"error");
+  };
+
+
+ 
+ 
+ 
+
+
+
+}
+
+
+
+
+
+function delete_profil(id, callback){
+console.log(typeof(id));
+var id=parseInt(id);
+
+//reset_list();
+	store_profil=db.transaction(STORENAME_PROFILS, type).objectStore(STORENAME_PROFILS);
+	
+	var request=store_profil.delete(id);
+	
+	request.onsuccess=function (e){
+	callback;
+	console.log(e+" eok");
+	}
+	
+	
+	request.onerror = function(e) {
+    console.log(e+"error");
+  };
+
+
+ 
+ 
+ 
+
+
+
 }
 
 
@@ -1048,6 +1399,54 @@ var work_on_parcours=function(parcours_data){
 }
 
 
+
+function get_sport(id,item,callback, key){
+		
+	//We will do a get on the parcours object, take the startTime, make minus with stopTime
+	//And we'll do an update with stopTime and duration
+
+	//Creation of a store on parcours object
+	store_sports=db.transaction(STORENAME_SPORTS, type).objectStore(STORENAME_SPORTS);
+	
+	//We define the keyRange with "only" for the query on DB
+	var keyRange = IDBKeyRange.only(parseInt(id));
+	
+	//Creation of cursor with the keyRange
+	var cursorRequest = store_sports.openCursor(keyRange);
+  
+	//Success of the cursor
+	cursorRequest.onsuccess = function(e){
+	  
+	//Store of the result	
+	var result = e.target.result;
+	
+	if(!!result == false){
+		   
+		    	console.log("Impossible de recuperer l'objet");
+	 }else{
+		    
+		  	callback(key, item, result.value);	
+		  		
+	  }
+	      
+	      
+	      
+	      
+	      
+  }
+  
+  
+  cursorRequest.onerror=function(e){
+  
+  	console.log("Erreur de curseur");
+  }
+
+	
+	
+	
+	
+}
+
 function format_heure(date_ms){
 	
 	var duree_s=date_ms/1000;
@@ -1097,11 +1496,16 @@ var input_json=function(pid){
 }
 
 
-function start_parcours(form){
+function start_parcours(){
+chrono();
+	var sport=document.getElementById('choice-sports').value;
+	var tag=document.getElementById('choice-tags').value;
 	
-	var selectedIndex=form.elements['choice_tags'].selectedIndex;
-var id=form.elements['choice_tags'].options[selectedIndex].value;
-	get_tag(id, add_parcours, start_gps);
+	console.log(tag+" "+sport);
+	add_parcours(sport,tag, current_profil, start_gps);
+//sport,tag,profil,callback
+
+
 	
 }
 
@@ -1234,7 +1638,7 @@ function get_parcours_and_finish(id, obj){
 
 
 
-var add_parcours=function (sport,callback){
+var add_parcours=function (sport,tag,profil,callback){
 
 console.log(sport);
 
@@ -1252,7 +1656,9 @@ var name="Parcours "+date;
 console.log(sport);
 var obj = {};
 obj.name=name;
-obj.sport=sport.name;
+obj.sport=sport; //id
+obj.tag=tag;//Nom
+obj.profil=profil; //id
 obj.startTime=obj_date.getTime();
 obj.duration=null;
 obj.stopTime=null;
