@@ -1,0 +1,67 @@
+<html>
+	<head>
+	<script  type="text/javascript">
+	
+var runrunrun = {};
+runrunrun.indexedDB = {};
+runrunrun.indexedDB.db=null;
+var db=null;
+ var type='readwrite';
+var DBNAME = 'RunRunRan';
+var DBVERSION = 1;
+var STORENAME_CONF = 'conf';
+var IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
+var IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
+runrunrun.indexedDB.open=function(){
+	
+	if(db){ //DB exists
+		log("DB existe");
+		
+	}else{
+		//Or not
+		//We open a connection to local DB
+		 var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+
+		
+		  var openreq = indexedDB.open(DBNAME, DBVERSION);
+		  
+		  openreq.onblocked = function withStoreOnError() {
+			  	console.error("asyncStorage: can't open database:", openreq.error.name);
+		  };
+		  openreq.onupgradeneeded = function(e) {
+			  console.log("upgrade");
+			 
+        
+        		openreq.result.createObjectStore(STORENAME_CONF,{keyPath: undefined, autoIncrement: true });
+		      		        
+		        
+		        
+		       
+         };
+         
+         openreq.onsuccess = function (e) {
+             
+        db =  e.target.result;
+        
+        var trans = db.transaction(STORENAME_CONF, type);
+var store = trans.objectStore(STORENAME_CONF);
+         
+     
+        console.log("hello");
+     
+      };
+
+		
+	}
+	
+};
+
+window.onload = function() {
+				runrunrun.indexedDB.open();
+	}
+		
+	</script>
+	</head>
+	<body>
+	</body>
+</html>

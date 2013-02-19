@@ -44,14 +44,14 @@ function CalcDistanceBetween(lat1, lon1, lat2, lon2) {
 	     
 	     
 	     function initialize() {
+	     console.log("init map");
     var latlng = new google.maps.LatLng(48.725623,2.272943);
     var myOptions = {
         zoom: 12,
         center: latlng,
         mapTypeId: google.maps.MapTypeId.ROADMAP
     };
-   map = new google.maps.Map(document.getElementById("map"),
-            myOptions);
+   map = new google.maps.Map(document.getElementById("map"),myOptions);
       
       
 }

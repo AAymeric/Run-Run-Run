@@ -3,26 +3,23 @@
 	<head>
 		<meta charset="utf-8">
 		<title>RunRunRun</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		
-		<link rel="stylesheet" href="css/style.css" />
 		<!--A enlever plus tard -->
 		<meta http-equiv="Cache-control" content="no-store">
 		<meta http-equiv="Cache-control" content="no-cache">
 		
-			
-<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+			<link rel="stylesheet" href="css/style.css" />
+		<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 		<script type="text/javascript" src="js/time.js"></script>
 		<script type="text/javascript" src="js/dom.js"></script>
 		<script type="text/javascript" src="js/db_mgnt.js"></script>
 		<script type="text/javascript" src="js/geolocation.js"></script>
 		<script type="text/javascript" src="js/gmaps.js"></script>
-	
 		
 		<script type="text/javascript">
 			var id_visible = "home";
-
-var db=null;
+					
 			window.onload = function() {
 				runrunrun.indexedDB.open();
 				document.getElementById("logo").addEventListener("click", changeVisibility, false);
@@ -33,13 +30,16 @@ var db=null;
 					if(elements[i] instanceof Element)
 						elements[i].addEventListener("click", changeVisibility, false); 
 				}
+
 			};
 			
 			function flyto(id){
 				document.getElementById(id).style.display = 'inline';
 				document.getElementById(id_visible).style.display = 'none';
-				id_visible = id;
+						id_visible = id;
 			}
+			
+			
 			
 			function changeVisibility() {
 				var id = this.getAttribute("data-role");
@@ -52,6 +52,7 @@ var db=null;
 				    
 				    document.getElementById("home").style.display = 'inline';
 					id_visible = "home";
+
 				} else {
 					if(!isVisible(id)){
 						document.getElementById(id).style.display = 'inline';
@@ -69,7 +70,7 @@ var db=null;
 			}
 	
 		</script>
-	<style type="text/css">
+		<style type="text/css">
     #container{position:relative;width:990px;margin:auto;}
     #container #map{width:500px;height:500px;margin:auto;}
   </style>
@@ -82,6 +83,7 @@ var db=null;
 				<img src="img/logo.png" data-role="home" id="logo" alt="Logo RunRunRun" title="RunRunRun" />
 				<h1 id="top-titre" data-role="home">RunRunRun</h1>
 			</div>
+			<input type="button" value="Liste" onclick="flyto('log');" />
 		</div>
 		
 		<div id="home" class="container">
@@ -96,17 +98,23 @@ var db=null;
 			<div class="page-grey container">
 				<div class="page-block">
 					<label for="choice-sports">Sports</label>
-					<select id="choice-sports" name="choice-sports"></select>
+					<select id="choice-sports" name="choice-sports">
+						
+					</select>
 				</div>
 			</div>
 			<div class="page-grey container">
 				<div class="page-block">
 					<label for="choice-tags">Tags</label>
-					<select id="choice-tags" name="choice-tags"></select>
+					<select id="choice-tags" name="choice-tags">
+						
+					</select>
 				</div>
 			</div>
 			
-			<input type="button" value="Commencer" onclick="start_parcours();" />
+			<div id="start" class="nav-item" data-role="trace" onClick="start_parcours();">
+				<h2>Go!</h2>
+			</div>
 		</div>
 		
 		<div id="trace" class="container page none">
@@ -135,151 +143,76 @@ var db=null;
 			<p>Distance : <span class="parcours_details" id="parcours_details_distance"></span></p>
 			<p>Profil associé : <span  class="parcours_details" id="parcours_details_profil"></span></p>
 			<p>Tag associé : <span class="parcours_details"  id="parcours_details_tag"></span></p>
-			<div id="container"><div id="map"></div></div>
+			<p class="container page none" id="map">
+			</div>
+			
 		</div>
 		
 		<div id="parcours_list" class="container page none">
-			<h1>Liste des parcours</h1>
-			<table id="table_parcours" cellspacing="0" cellpadding="0">
-				<thead>
-					<td>Parcours</td>
-					<td>Sport</td>
-					<td>Tag</td>
-				</thead>
-				<tbody>
-				</tbody>
-			</table>
+			<!-- Select avec liste des profils -->
+			<h2>Liste des parcours</h2>
+			<ul id="ul_parcours">
+			</ul>
 		</div>
 				
 		<div id="parameters_list" class="container page none">
-			<h1>Profils</h1>
-			<div class="page-grey container">
-				<div class="page-block">
-					<h2 data-role="profil_add" class="nav-item">Ajouter un profil</h2>
-				</div>
-			</div>
-			<div class="page-grey container">
-				<div class="page-block">
-					<h2 data-role="profil_list" class="nav-item">Liste des profils</h2>
-				</div>
-			</div>
-			
-			<h1>Tags</h1>
-			<div class="page-grey container">
-				<div class="page-block">
-					<h2 data-role="tag_add" class="nav-item">Ajouter un tag</h2>
-				</div>
-			</div>
-			<div class="page-grey container">
-				<div class="page-block">
-					<h2 data-role="tag_list" class="nav-item">Liste des tags</h2>
-				</div>
-			</div>
+		<ul id="menu">
+			<li>Profils
+				<ul>
+					<li data-role="profil_add" class="nav-item">Ajouter</li>
+					<li data-role="profil_list" class="nav-item">Afficher</li>
+				</ul>
+			</li>
+			<li>Tags
+				<ul>
+					<li data-role="tag_add" class="nav-item">Ajouter</li>
+					<li data-role="tag_list" class="nav-item">Afficher</li>
+					
+				</ul>
+			</li>
+		</ul>
+		
 		</div>	
 		
 		<div id="tag_add" class="container page none">
-			<h1>Ajouter un tag</h1>
-			<div class="page-grey container">
-				<div class="page-block">
-					<label for="tag_name">Nom</label>
-					<input type="text" name="tag_name" id="tag_name_add" />
-				</div>
-			</div>
-			
-			<input type="button" value="Enregistrer" onclick="insert_tag();" />
+		<p>Nom : <input type="text" name="tag_name" id="tag_name_add"/></p>
+				<input type="button" value="add tag" onclick="insert_tag();" />
 		</div>
-		
 		<div id="tag_list"class="container page none">
-			<h1>Liste des tags</h1>
-			<div class="page-grey container">
-				<div class="page-block">
-					<label for="tag_edit_list">Tags</label>
-					<select name="tag_edit_list" id="tag_edit_list"></select>
-				</div>
-			</div>
-			
-			<input type="button" value="Editer" onclick="load_tag()" />
-			<input type="button" value="Supprimer" onclick="del_tag()" />
+			<select name="" id="tag_edit_list"></select><input type="button" value="Editer" onclick="load_tag()" /><input type="button" value="Supprimer" onclick="del_tag()" />
+
 		</div>
-		
+		<div id="log" class="container page none"></div>
 		<div id="tag_edit" class="container page none">
-			<h1>Editer un tag</h1>
-			<div class="page-grey container">
-				<div class="page-block">
-					<label for="tag_name">Nom</label>
-					<input type="text" name="tag_name" id="tag_name_edit" />
-				</div>
-			</div>
-			
-			<input type="hidden" id="tag_id_edit" name="tag_id_edit" />
-			<input type="button" value="Editer" onclick="edit_tag();" />
+		Nom : <input type="text" name="tag_name" id="tag_name_edit"/>
+		
+		<input type="hidden" id="tag_id_edit" name="tag_id_edit" />
+		<input type="button" value="edit tag" onclick="edit_tag();" />
 		</div>
 			
 		<div id="profil_add" class="container page none">
-			<h1>Ajouter un profil</h1>
-			<div class="page-grey container">
-				<div class="page-block">
-					<label for="profil_name">Nom</label>
-					<input type="text" name="profil_name" id="profil_name_add" />
-				</div>
-			</div>
-			<div class="page-grey container">
-				<div class="page-block">
-					<label for="profil_weight">Poids</label>
-					<input type="text" name="profil_weight" id="profil_weight_add" />
-				</div>
-			</div>
-			<div class="page-grey container">
-				<div class="page-block">
-					<label for="profil_sex_add">Sexe</label>
-					<select id="profil_sex_add" name="profil_sex_add"><option value="M">Homme</option><option value="w">Femme</option></select>
-				</div>
-			</div>
-			
-			<input type="button" value="Enregistrer" onclick="insert_profil();" />
+		<p>Nom : <input type="text" name="profil_name" id="profil_name_add"/></p>
+		<p>Poids : <input type="text" name="profil_weight" id="profil_weight_add" /></p>
+		<p>Sexe :  <select id="profil_sex_add" name="profil_sex_add"><option value="M">Homme</option><option value="w">Femme</option></select></p>
+		<input type="button" value="add profil" onclick="insert_profil();" />
 		</div>
 		
 		<div id="profil_list"class="container page none">
-			<h1>Liste des profils</h1>
-			<div class="page-grey container">
-				<div class="page-block">
-					<label for="profil_edit_list">Profils</label>
-					<select name="profil_edit_list" id="profil_edit_list"></select>
-				</div>
-			</div>
-			
-			<input type="button" value="Editer" onclick="load_profil()" />
-			<input type="button" value="Supprimer" onclick="del_profil()" />
+			<select name="" id="profil_edit_list"></select><input type="button" value="Editer" onclick="load_profil()" /><input type="button" value="Supprimer" onclick="del_profil()" />
+
 		</div>
 		
+		
 		<div id="profil_edit" class="container page none">
-			<h1>Editer un profil</h1>
-			<div class="page-grey container">
-				<div class="page-block">
-					<label for="profil_name">Nom</label>
-					<input type="text" name="profil_name" id="profil_name_edit"/>
-				</div>
-			</div>
-			<div class="page-grey container">
-				<div class="page-block">
-					<label for="profil_weight">Poids</label>
-					<input type="text" name="profil_weight" id="profil_weight_edit" />
-				</div>
-			</div>
-			<div class="page-grey container">
-				<div class="page-block">
-					<label for="profil_sex_edit">Sexe</label>
-					<select id="profil_sex_edit" name="profil_sex_edit">
-						<option value="M">Homme</option>
-						<option value="w">Femme</option>
-					</select>
-				</div>
-			</div>
-			
-			<input type="hidden" id="profil_id_edit" name="profil_id_edit" />
-			<input type="hidden" id="profil_active_edit" name="profil_active_edit" />
-			<input type="button" value="Editer" onclick="edit_profil();" />
+		Nom : <input type="text" name="profil_name" id="profil_name_edit"/>
+		Poids : <input type="text" name="profil_weight" id="profil_weight_edit" />
+		Sexe :  <select id="profil_sex_edit" name="profil_sex_edit"><option value="M">Homme</option><option value="w">Femme</option></select>
+		<input type="hidden" id="profil_id_edit" name="profil_id_edit" />
+		<input type="hidden" id="profil_active_edit" name="profil_active_edit" />
+		<input type="button" value="edit profil" onclick="edit_profil();" />
 		</div>
+
+
 				
 		<div id="footer">
 			<div class="container">
