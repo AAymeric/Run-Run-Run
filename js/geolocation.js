@@ -1,7 +1,7 @@
 var parcours_id=null;
 var cpt=0;
 var watchId=null;
-
+var distance=0;
 var start_gps=function(parcours){
 
 
@@ -22,14 +22,28 @@ function successCallback(position){
 	  newobj.LatStartPoint=position.coords.latitude;
 	  newobj.LongStartPoint=position.coords.longitude;
 	  newobj.startTime=new Date().getTime();
-	 console.log(parcours_id);
+	
 	 
 	 get_parcours_and_begin(parcours_id,newobj);
 	 
 	  //get_parcours(parcours_id,update_parcours(parcours_id,newobj));
 	 
   }else{
-	  
+	  if(cpt==1){
+		  old_lati=position.coords.latitude;
+		  old_longi=position.coords.longitude;
+		  
+	  }else{
+		if(old_lati!=null || old_longi!=null){
+	   		
+	   		
+	   		
+distance=distance+CalcDistanceBetween(old_lati,old_longi,position.coords.latitude,position.coords.longitude);
+	   		
+	   		
+   		}  
+		  
+	  }
 	  
 	  
   }
@@ -44,8 +58,7 @@ function successCallback(position){
   obj.heading=position.coords.heading;
   obj.speed=position.coords.speed;
   obj.parcours_id=parcours_id;
-  
-  
+  obj.distance=distance;
   update_display(obj);
   
   add_record(obj)
