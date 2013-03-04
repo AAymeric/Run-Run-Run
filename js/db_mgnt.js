@@ -44,11 +44,11 @@ var IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
 runrunrun.indexedDB.open=function(){
 	
 	
-	console.log("par la");
+	log("par la");
 
 	
 	if(db){ //DB exists
-		console.log("DB existe");
+		log("DB existe");
 		
 	}else{
 	
@@ -56,7 +56,7 @@ runrunrun.indexedDB.open=function(){
 		//We open a connection to local DB
 			var request= indexedDB.open(DBNAME, DBVERSION);
 		     request.onupgradeneeded = function(e) {
-			  console.log("upgrade");
+			  log("upgrade");
 			 
        var db =  e.target.result;
        
@@ -64,15 +64,15 @@ runrunrun.indexedDB.open=function(){
         
         		//object_store_conf=db.createObjectStore(STORENAME_CONF,{keyPath: undefined, autoIncrement: true });
         
-		       object_store_sports= db.createObjectStore(STORENAME_SPORTS,{ keyPath: 'id' , autoIncrement: true });
-		        object_store_parcours=db.createObjectStore(STORENAME_PARCOURS,{ keyPath: 'id', autoIncrement: true});
-		        object_store_records=db.createObjectStore(STORENAME_RECORDS,{keyPath: 'id', autoIncrement: true});
-		        object_store_tags=db.createObjectStore(STORENAME_TAGS,{keyPath: 'id', autoIncrement: true});
+		       object_store_sports= db.createObjectStore(STORENAME_SPORTS,{ keyPath:undefined , autoIncrement: true });
+		        object_store_parcours=db.createObjectStore(STORENAME_PARCOURS,{ keyPath: undefined, autoIncrement: true});
+		        object_store_records=db.createObjectStore(STORENAME_RECORDS,{keyPath: undefined, autoIncrement: true});
+		        object_store_tags=db.createObjectStore(STORENAME_TAGS,{keyPath: undefined, autoIncrement: true});
 		       object_store_profils=db.createObjectStore(STORENAME_PROFILS,{keyPath: undefined, autoIncrement: true});
-		        console.log(db);
+		        log(db);
 		        
 		        init_add_sport=true;
-		        object_store_records.createIndex('parcours_id','parcours_id',{ unique: false });
+		        object_store_records.createIndex('parcours_id','parcours_id',{unique: false });
 		        object_store_sports.createIndex('name','name',{ unique: true });
 		       
 
@@ -82,11 +82,11 @@ runrunrun.indexedDB.open=function(){
            
            request.result.onversionchange = function(){
            
-           console.log("version change");           
+           log("version change");           
            
         };
       db =  request.result;
-        console.log("puis la");
+        log("puis la");
         
         			
                     if(init_add_sport){add_sports();}; 
@@ -99,7 +99,7 @@ runrunrun.indexedDB.open=function(){
 		
 		  
 		  request.onblocked = function (e) {
-			  	console.log("asyncStorage: can't open database:", request.error.name);
+			  	log("asyncStorage: can't open database:", request.error.name);
 		  };
 		
         
@@ -177,7 +177,7 @@ var add_parcours_to_list=function(key,item, item2, tag){
 	tr.appendChild(td3);
 	table.appendChild(tr);
 	
-	tr.addEventListener("click",function(){ get_info_parcours(key);}, false); 
+	tr.addEventListener("click",function(){detail_parcours(key);}, false); 
 		
 }
 
@@ -189,8 +189,7 @@ function declenchement(item){
 }
 var get_info_parcours=function(id){
 	
-	var ret1=test1();
-	var ret2=test2();
+	
 	var objet=null;
 	log("objet "+typeof(objet));
 	while(typeof (objet=detail_parcours(id, this)) !=="undefined"){
@@ -219,9 +218,9 @@ function test2(){
 
 
 
-function detail_parcours(id, ref){
+function detail_parcours(id){
 
-		log(ref);
+		log("ID "+id);
 
 	store_parcours=db.transaction(STORENAME_PARCOURS, type).objectStore(STORENAME_PARCOURS);
 
@@ -276,7 +275,7 @@ store_parcours=db.transaction(STORENAME_PARCOURS, type).objectStore(STORENAME_PA
        	var tag_val='';
        	if(result){
        
-       console.log(result.key+" "+result.value);
+       log(result.key+" "+result.value);
 	       	  
 	
   				get_tag_info(result.key,result.value);
@@ -460,7 +459,7 @@ function edit_tag(){
 
 
 function edition_tag(tag){
-		console.log(tag);
+		log(tag);
 			var keyRange = IDBKeyRange.only(parseInt(tag.id));
 		store_tags=db.transaction(STORENAME_TAGS, type).objectStore(STORENAME_TAGS);
 
@@ -616,7 +615,7 @@ function add_sport(sport){
 	var req=objectStore.add(sport);
 	
 	req.onsuccess = function() {
-          console.log('sport ajouté');
+          log('sport ajouté');
           //get_all_sports();
         };
         req.onerror = function() {
@@ -920,7 +919,7 @@ function see_records(parcours){
   }
 };
 
-console.log("Distance : "+new_dist);
+log("Distance : "+new_dist);
 }
 
 
@@ -933,7 +932,7 @@ var compteur=0;
 	 var json={};
 	 var singleKeyRange = IDBKeyRange.only(parcours);
 	 
-	 delete_table_record("list_records");
+	 //delete_table_record("list_records");
 	index.openCursor(singleKeyRange).onsuccess = function(event) {
   var cursor = event.target.result;
   if (cursor) {
@@ -947,10 +946,10 @@ var compteur=0;
   var stringifyjson=JSON.stringify(json);
   
   var newtstring=stringifyjson.replace(/\\("|'|\\)/g, "$1");
-
-  document.getElementById('zone_json').value=stringifyjson;
-   document.getElementById('input_json').value=stringifyjson;
-   document.getElementById('mail').innerHTML='<a href=mailto:simon51100%40gmail.com?body='+newtstring+'>Mail</a>';
+  console.log(stringifyjson);
+  //document.getElementById('zone_json').value=stringifyjson;
+   //document.getElementById('input_json').value=stringifyjson;
+   //document.getElementById('mail').innerHTML='<a href=mailto:simon51100%40gmail.com?body='+newtstring+'>Mail</a>';
 };
 }
 
@@ -1202,7 +1201,7 @@ function form_get_data(action, referer){
 
 
 var update_parcours= function(id, data){
-	console.log("update_parcours");
+	log("update_parcours");
 	var keyRange = IDBKeyRange.only(parseInt(id));
 		store_parcours=db.transaction(STORENAME_PARCOURS, type).objectStore(STORENAME_PARCOURS);
 
@@ -1217,10 +1216,10 @@ var update_parcours= function(id, data){
   var objRequest = cursor.update(data);
 	
 	objRequest.onsuccess = function(ev){
-    console.log('Success in updating record 88');
+    log('Success in updating record 88');
     };
   objRequest.onerror = function(ev){
-   console.log('Error in updating record 88');
+   log('Error in updating record 88');
     };
 	
 	
@@ -1555,11 +1554,15 @@ function list_parcours(){
 
 var work_on_parcours=function(id){
 
+
+
+	var transaction = db.transaction(STORENAME_RECORDS, "readwrite");
+	var objectStore = transaction.objectStore(STORENAME_RECORDS);
 	
-	store_records=db.transaction(STORENAME_RECORDS, type).objectStore(STORENAME_RECORDS);
-	 var index = store_records.index("parcours_id");
+		 var index = objectStore.index("parcours_id");
 	 //var cursorReq = index.openKeyCursor();
-	 var singleKeyRange = IDBKeyRange.only(id);
+	 log("ID "+id);
+	 var singleKeyRange = IDBKeyRange.only(parseInt(id));
 	 
 	
 	 var distance=null;
@@ -1572,13 +1575,20 @@ var work_on_parcours=function(id){
 
   var old_lati=null;
   var old_longi=null;
-	index.openCursor(singleKeyRange).onsuccess = function(event) {
+  
+  var cursorRequest=index.openCursor(singleKeyRange);
+  
+	cursorRequest.onsuccess = function(event) {
   var cursor = event.target.result;
   
-    log("ici");
-  if (cursor) {
-
+      if (cursor) {
+	   
+  		
+  		
+  		
+  		
   		//On calcule la distance
+  		
   		
   		if(min_ts==null && max_ts==null){
 	  		
@@ -1611,29 +1621,49 @@ var work_on_parcours=function(id){
 		   	max_ts=cursor.value.timestamp;
 		   	
 	   	}
+	   	
+	   		//console.log(cursor.value.latitude+";"+cursor.value.longitude+";"+cursor.value.timeStamp+"");
 	   		old_lati=cursor.value.latitude;
 	   		old_longi=cursor.value.longitude;
+	   		console.log(cursor.value);
 	   		
+	   		
+	   
+		   	
+		   		   	//On affiche 
+	  
+	   		
+	   		
+	   
 	   		var retour=cursor.continue();
-	   		
-	   		
+	   	
 	   		//log("Cursor "+cursor.continue());
             //cursor.continue();
   }else{
 	  
+
 	   log("Distance "+distance);
 	    var duree_ms=max_ts-min_ts;
   log("Duree "+format_heure(duree_ms));
   log("Vitesse maximale "+vitesse_max);
   
+  console.log(old_lati+" "+old_longi);
    polyline(path_polyline);
    center_map(old_lati,old_longi);
-  
+   
   }
  
   
  
 };
+cursorRequest.oncomplete=function(e){
+
+console.log("terminadoooss");
+};
+cursorRequest.onerror=function(e){
+
+log("ERRREUUR");
+}
 
 	
 }
@@ -1774,7 +1804,7 @@ function get_parcours_and_begin(id, obj){
 	
 	if(!!result == false){
 		   
-		    	console.log("Impossible de recuperer l'objet");
+		    	log("Impossible de recuperer l'objet");
 	 }else{
 		    
 		  		    //Instanciation of new object

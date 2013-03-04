@@ -12,14 +12,21 @@ function update_display(geoloc){
 	document.getElementById("speed").innerHTML=geoloc.speed;
 	document.getElementById("distance").innerHTML=geoloc.distance;
 	document.getElementById("altitude").innerHTML=geoloc.altitude;
-	
+	document.getElementById("accuracy").innerHTML=geoloc.accuracy;
 }
 function log(text){
 	
-		
+		var log=document.getElementById('log');
+		log.innerHTML+='<p>'+text+'</p>';
+	
 }
 
-
+function warn_accuracy_not_ok(accuracy){
+	
+	
+	document.getElementById("distance").innerHTML="Acquisition GPS en cours...";
+	document.getElementById("accuracy").innerHTML=accuracy;
+}
 
 function add_option_to_list(id, objet, callback){
 	
@@ -86,7 +93,7 @@ document.getElementById('parcours_details_profil').innerHTML=name;
 
 
 function fill_parcours_detail(item,which, id_parcours){
-
+	log(id_parcours);
 	var assoc=new Object();
 	assoc['parcours_name']=[{id:"parcours_details_name"}];
 	assoc['parcours_startTime']=[{id:"parcours_details_start_time", type:"hour"},{id:"parcours_details_date", type:"date"}];
@@ -94,9 +101,9 @@ function fill_parcours_detail(item,which, id_parcours){
 	assoc['parcours_profil']=[{id:"parcours_details_profil",func:"get_profil_name(id)"}];
 	assoc['parcours_tag']=[{id:"parcours_details_tag", func:"get_tag_name(id)"}];
 	assoc['parcours_duration']=[{id:"parcours_details_duration", type:"hms"}];
-	
+	log("je suis bien la");
 	 work_on_parcours(id_parcours);
-	
+	log("dans flll_parcours");
 	
 	for(x in item){
 	console.log(x+" ---"+which+"_"+x+"");
