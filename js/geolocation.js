@@ -15,7 +15,7 @@ var start_gps=function(parcours){
 
 
 function successCallback(position){
-		
+		console.log("ici");
   if(cpt==0){
 	  
 	  var newobj={};
@@ -38,17 +38,15 @@ function successCallback(position){
 	   		
 	   		
 	   		
-distance=distance+CalcDistanceBetween(old_lati,old_longi,position.coords.latitude,position.coords.longitude);
+				distance=distance+CalcDistanceBetween(old_lati,old_longi,position.coords.latitude,position.coords.longitude);
 	   		
 	   		
    		}  
 		  
 	  }
+	   if(position.coords.accuracy<30){
 	  
-	  
-  }
-  
-  var obj = {};
+	   var obj = {};
   obj.latitude=position.coords.latitude;
   obj.longitude=position.coords.longitude;
   obj.timestamp=position.timestamp;
@@ -60,8 +58,33 @@ distance=distance+CalcDistanceBetween(old_lati,old_longi,position.coords.latitud
   obj.parcours_id=parcours_id;
   obj.distance=distance;
   update_display(obj);
-  
+  console.log(obj);
   add_record(obj)
+	  
+  }else{
+	  console.log("par iciiii");
+	  	warn_accuracy_not_ok(position.coords.accuracy);
+	  
+  }
+	  
+	  
+	  
+	  
+  }
+  
+  
+  
+  
+ 
+  
+ 
+  
+  
+  
+  
+  
+  
+  
 cpt++;
 };  
  
